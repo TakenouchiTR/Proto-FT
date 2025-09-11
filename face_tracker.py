@@ -49,10 +49,13 @@ class FaceTracker():
             cv2.circle(frame, (x, y), 1, (0, 255, 0), -1)
             cv2.putText(frame, str(id), (x + 2, y - 2), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 255), 1)
         cv2.imshow("Face Tracking Debug", frame)
+        cv2.waitKey(1)
 
     def update(self):
         ret, frame = self.cap.read()
         if not ret:
+            if settings.SHOW_DEBUG:
+                self.render_debug(frame, [])
             return None
         
         frame = cv2.flip(frame, 1)
@@ -60,6 +63,8 @@ class FaceTracker():
         results = self.face_mesh.process(rgb_frame)
 
         if not results.multi_face_landmarks:
+            if settings.SHOW_DEBUG:
+                self.render_debug(frame, [])
             return None
 
         landmarks = results.multi_face_landmarks[0].landmark

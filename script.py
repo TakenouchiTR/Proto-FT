@@ -29,11 +29,13 @@ def update_frame():
             continue
 
         lerp_shape.update_shape_strength("open", parameters.mouth_openness)
+        frame_builder.reset()
         frame_builder.draw_shape(lerp_shape.lerped_shape)
 
-        image_renderer.render_pixels(frame_builder.pixels)
+        pixels = frame_builder.pixels
+        image_renderer.render_pixels(pixels)
 
-        time.sleep(0.1)
+        time.sleep(0.01)
 
 if settings.WINDOW_RENDER:
     image_renderer = TestRenderer()
