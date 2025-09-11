@@ -24,8 +24,8 @@ face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1, refi
 # Tkinter setup
 root = tk.Tk()
 root.title("LED Panel Simulation")
-canvas_width = matrix_width * 10
-canvas_height = matrix_height * 10
+canvas_width = settings.MATRIX_WIDTH * 10
+canvas_height = settings.MATRIX_HEIGHT * 10
 panel = tk.Label(root)
 panel.pack()
 
