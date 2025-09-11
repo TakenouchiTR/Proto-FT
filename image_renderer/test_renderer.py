@@ -3,7 +3,7 @@ import tkinter as tk
 from typing import List, Tuple
 from image_renderer.image_renderer import ImageRenderer
 import settings
-from PIL import Image, ImageDraw, ImageTk
+from PIL import Image, ImageTk
 
 class TestRenderer(ImageRenderer):
     def __init__(self):
@@ -16,31 +16,34 @@ class TestRenderer(ImageRenderer):
         self.panel.pack()
 
         self._lock = threading.Lock()
+        self._latest_img = None  # store latest PIL image for UI thread consumption
 
     def start(self):
         self.root.mainloop()
 
     def render_pixels(self, pixels: List[List[Tuple[int, int, int]]]):
+        # Build a 1:1 image (matrix size), then scale for display.
+        # Do NOT touch Tk widgets from this worker thread.
+        img = Image.new('RGB', (settings.MATRIX_WIDTH, settings.MATRIX_HEIGHT), color=(0, 0, 0))
+
+        # Fast path: flatten and putdata
+        flat = []
+        for row in pixels:
+            flat.extend(row)
+        img.putdata(flat)
+
+        # Hand off to Tk main thread to update the UI
         with self._lock:
-            img = Image.new('RGB', (settings.MATRIX_WIDTH, settings.MATRIX_HEIGHT), color=(0, 0, 0))
-            draw = ImageDraw.Draw(img)
+            self._latest_img = img
+        self.root.after(0, self._update_image)
 
-            pixel_size = settings.WINDOW_RENDER_SCALE
-
-            for row in range(len(pixels)):
-                for col in range(len(pixels[row])):
-                    draw.rectangle((col * pixel_size, row * pixel_size, (col + 1) * pixel_size, (row + 1) * pixel_size), fill=pixels[row][col])
-            
-            
-            for row in range(len(pixels)):
-                for col in range(len(pixels[row])):
-                    if pixels[row][col] != (0, 0, 0):
-                        print('#', end='')
-                    else:
-                        print(' ', end='')
-                print()
-                    
-
-            imgtk = ImageTk.PhotoImage(img.resize((self.canvas_width, self.canvas_height), resample=Image.NEAREST))
-            self.panel.config(image=imgtk)
-            self.panel.image = imgtk
+    def _update_image(self):
+        # Runs on Tk main thread
+        with self._lock:
+            img = self._latest_img
+            self._latest_img = None
+        if img is None:
+            return
+        imgtk = ImageTk.PhotoImage(img.resize((self.canvas_width, self.canvas_height), resample=Image.NEAREST))
+        self.panel.config(image=imgtk)
+        self.panel.image = imgtk
