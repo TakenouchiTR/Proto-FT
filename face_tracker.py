@@ -6,8 +6,6 @@ import mp_landmarks
 import settings
 import shape_thresholds
 
-ROLLING_AVERAGE_MAX = 20
-
 class FaceTracker():
     def __init__(self):
         cap = cv2.VideoCapture(2, cv2.CAP_DSHOW)
@@ -29,7 +27,7 @@ class FaceTracker():
         for id, lm in enumerate(landmarks):
             values = self.average_values.get(id, [])
             values.append((lm.x, lm.y))
-            if len(values) > ROLLING_AVERAGE_MAX:
+            if len(values) > settings.ROLLING_AVERAGE_MAX:
                 values.pop(0)
             self.average_values[id] = values
 
@@ -39,7 +37,13 @@ class FaceTracker():
         return abs(bottom - top)
     
     def render_debug(self, frame, landmarks):
+        values = [
+            v for k, v in vars(mp_landmarks).items()
+            if not k.startswith("__") and not callable(v)
+        ]
         for id, lm in enumerate(landmarks):
+            if id not in values and not settings.SHOW_ALL_DEBUG_LANDMARKS:
+                continue
             x = int(lm.x * settings.FT_CAPTURE_WIDTH)
             y = int(lm.y * settings.FT_CAPTURE_HEIGHT)
             cv2.circle(frame, (x, y), 1, (0, 255, 0), -1)
