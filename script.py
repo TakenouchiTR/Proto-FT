@@ -1,7 +1,9 @@
-import tkinter as tk
-from PIL import Image, ImageDraw, ImageTk
-import cv2
+import threading
+import time
 from face_tracker import FaceTracker
+from frame_builder import FrameBuilder
+from image_renderer.image_renderer import ImageRenderer
+from image_renderer.test_renderer import TestRenderer
 import settings
 import shape
 from lerp_shape import LerpShape
@@ -16,34 +18,26 @@ lerp_shape = LerpShape(mouth_closed)
 lerp_shape.add_shape("open", mouth_open)
 
 face_tracker = FaceTracker()
-
-# Tkinter setup
-root = tk.Tk()
-root.title("LED Panel Simulation")
-canvas_width = settings.MATRIX_WIDTH * 10
-canvas_height = settings.MATRIX_HEIGHT * 10
-panel = tk.Label(root)
-panel.pack()
+frame_builder = FrameBuilder(settings.MATRIX_WIDTH, settings.MATRIX_HEIGHT)
+image_renderer: ImageRenderer
 
 def update_frame():
-    parameters = face_tracker.update()
-    if parameters is None:
-        root.after(50, update_frame)
-        return
+    while True:
+        parameters = face_tracker.update()
+        if parameters is None:
+            time.sleep(0.1)
+            continue
 
-    img = Image.new('RGB', (settings.MATRIX_WIDTH, settings.MATRIX_HEIGHT), color=(0, 0, 0))
-    draw = ImageDraw.Draw(img)
+        lerp_shape.update_shape_strength("open", parameters.mouth_openness)
+        frame_builder.draw_shape(lerp_shape.lerped_shape)
 
-    lerp_shape.update_shape_strength("open", parameters.mouth_openness)
-    draw.polygon(lerp_shape.lerped_shape.points, fill=(255, 100, 100))
+        image_renderer.render_pixels(frame_builder.pixels)
 
-    # Update LED simulation
-    imgtk = ImageTk.PhotoImage(img.resize((canvas_width, canvas_height), resample=Image.NEAREST))
-    panel.config(image=imgtk)
-    panel.image = imgtk
+        time.sleep(0.1)
 
-    root.after(1, update_frame)
-
-# Start the loop in main thread
-update_frame()
-root.mainloop()
+if settings.WINDOW_RENDER:
+    image_renderer = TestRenderer()
+    threading.Thread(target=update_frame, daemon=True).start()
+    image_renderer.start()
+else:
+    pass
