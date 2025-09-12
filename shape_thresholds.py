@@ -12,4 +12,4 @@ class ShapeThreshold:
         return (value - self.minimum) / (self.maximum - self.minimum)
 
 MOUTH_OPENNESS = ShapeThreshold(0.03, 0.25)
-EYE_OPENNESS = ShapeThreshold(0.125, 0.155)
+EYE_OPENNESS = ShapeThreshold(0.78, 0.93)

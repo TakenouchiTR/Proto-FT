@@ -1,6 +1,8 @@
 import threading
 import time
-from face_tracker import FaceTracker
+from face_tracking.dlib_tracker import DlibTracker
+from face_tracking.face_tracker import FaceTracker
+from face_tracking.mp_tracker import MpTracker
 from frame_builder import FrameBuilder
 from image_renderer.image_renderer import ImageRenderer
 from image_renderer.test_renderer import TestRenderer
@@ -25,7 +27,7 @@ right_mouth_lerp_shape.add_shape("open", mouth_open)
 right_eye_lerp_shape = LerpShape(eye_closed)
 right_eye_lerp_shape.add_shape_as_offset("open", eye_open)
 
-face_tracker = FaceTracker()
+face_tracker = MpTracker()
 frame_builder = FrameBuilder(settings.MATRIX_WIDTH, settings.MATRIX_HEIGHT)
 image_renderer: ImageRenderer
 
@@ -33,11 +35,11 @@ def update_frame():
     while True:
         parameters = face_tracker.update()
         if parameters is None:
-            time.sleep(0.1)
+            time.sleep(0.01)
             continue
 
         right_mouth_lerp_shape.update_shape_strength("open", parameters.mouth_openness)
-        right_eye_lerp_shape.update_shape_strength("open", parameters.mouth_openness)
+        right_eye_lerp_shape.update_shape_strength("open", parameters.right_eye_openness)
 
         frame_builder.reset()
 
