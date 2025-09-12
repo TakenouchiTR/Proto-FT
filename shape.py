@@ -70,11 +70,11 @@ class Shape:
         return self.points[index]
     
     def __add__(self, other):
-        if len(self.points) != len(other.points):
-            raise ValueError("Shapes must have the same number of points")
-        if other is Shape:
+        if isinstance(other, Shape):
+            if len(self.points) != len(other.points):
+                raise ValueError("Shapes must have the same number of points")
             return Shape([(p[0] + other.points[i][0], p[1] + other.points[i][1]) for i, p in enumerate(self.points)])
-        elif other is tuple or other is list:
+        elif isinstance(other, (tuple, list)):
             return Shape([(p[0] + other[0], p[1] + other[1]) for p in self.points])
         else:
             raise TypeError("Other must be a Shape, tuple, or list")

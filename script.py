@@ -14,8 +14,16 @@ with open("shapes/mouth_closed.json", "r") as f:
     mouth_closed = shape.from_json(json.load(f))
 with open("shapes/mouth_open.json", "r") as f:
     mouth_open = shape.from_json(json.load(f))
-lerp_shape = LerpShape(mouth_closed)
-lerp_shape.add_shape("open", mouth_open)
+with open("shapes/eye_closed.json", "r") as f:
+    eye_closed = shape.from_json(json.load(f))
+with open("shapes/eye_open.json", "r") as f:
+    eye_open = shape.from_json(json.load(f))
+
+right_mouth_lerp_shape = LerpShape(mouth_closed)
+right_mouth_lerp_shape.add_shape("open", mouth_open)
+
+right_eye_lerp_shape = LerpShape(eye_closed)
+right_eye_lerp_shape.add_shape_as_offset("open", eye_open)
 
 face_tracker = FaceTracker()
 frame_builder = FrameBuilder(settings.MATRIX_WIDTH, settings.MATRIX_HEIGHT)
@@ -28,9 +36,13 @@ def update_frame():
             time.sleep(0.1)
             continue
 
-        lerp_shape.update_shape_strength("open", parameters.mouth_openness)
+        right_mouth_lerp_shape.update_shape_strength("open", parameters.mouth_openness)
+        right_eye_lerp_shape.update_shape_strength("open", parameters.mouth_openness)
+
         frame_builder.reset()
-        frame_builder.draw_shape(lerp_shape.lerped_shape)
+
+        frame_builder.draw_shape(right_mouth_lerp_shape.lerped_shape)
+        frame_builder.draw_shape(right_eye_lerp_shape.lerped_shape)
 
         pixels = frame_builder.pixels
         image_renderer.render_pixels(pixels)

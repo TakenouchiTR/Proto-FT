@@ -3,11 +3,10 @@ from typing import Dict
 
 
 class LerpShape:
-    shapes: Dict[str, Shape] = {}
-    shape_strengths: Dict[str, float] = {}
-    lerped_shape: Shape
 
     def __init__(self, base_shape: Shape):
+        self.shapes: Dict[str, Shape] = {}
+        self.shape_strengths: Dict[str, float] = {}
         self._base_shape = base_shape
         self.lerped_shape = Shape([])
     
@@ -26,8 +25,12 @@ class LerpShape:
 
         self.update_lerped_shape()
     
+    def add_shape_as_offset(self, name: str, shape: Shape, strength: float = 1.0):
+        self.add_shape(name, shape + self._base_shape, strength)
+
+
     def update_shape_strength(self, name: str, strength: float):
-        LerpShape.shape_strengths[name] = min(1.0, max(0.0, strength))
+        self.shape_strengths[name] = min(1.0, max(0.0, strength))
 
         self.update_lerped_shape()
     
