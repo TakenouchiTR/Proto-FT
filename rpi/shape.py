@@ -46,18 +46,10 @@ class Shape:
         return max(p[1] for p in self.points)
     
     def flipped_x(self):
-        width = self.get_width()
-        left = self.left()
-        offset_amount = width + left
-
-        return Shape([(-p[0] + offset_amount, p[1]) for p in self.points])
+        return Shape([(-p[0], p[1]) for p in self.points])
     
     def flipped_y(self):
-        height = self.get_height()
-        top = self.top()
-        offset_amount = height + top
-
-        return Shape([(p[0], -p[1] + offset_amount) for p in self.points])
+        return Shape([(p[0], -p[1]) for p in self.points])
 
     
     def __len__(self):

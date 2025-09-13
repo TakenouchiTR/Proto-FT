@@ -23,17 +23,17 @@ class FrameBuilder:
         if render_settings is not None:
             if render_settings.scale != 1:
                 shape *= render_settings.scale
-            if render_settings.offset != (0, 0):
-                shape += render_settings.offset
             if render_settings.rotation != 0:
                 shape = shape.rotated(render_settings.rotation, render_settings.rotation_center)
             if render_settings.flip_h:
                 shape = shape.flipped_x()
             if render_settings.flip_v:
                 shape = shape.flipped_y()
+            if render_settings.offset != (0, 0):
+                shape += render_settings.offset
             color = render_settings.color
 
-        rendered_pixels = polygon_to_pixels(shape, padding=1)
+        rendered_pixels = polygon_to_pixels(shape, padding=2)
         for x, y in rendered_pixels:
             if x < 0 or x >= self.width or y < 0 or y >= self.height:
                 continue

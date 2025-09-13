@@ -5,9 +5,12 @@ from typing import Dict
 class LerpShape:
 
     def __init__(self, base_shape: Shape):
+        if isinstance(base_shape, list):
+            base_shape = Shape(base_shape)
+        
         self.shapes: Dict[str, Shape] = {}
         self.shape_strengths: Dict[str, float] = {}
-        self._base_shape = base_shape
+        self._base_shape = base_shape.clone()
         self.lerped_shape = Shape([])
     
     def get_shape(self, name: str):
@@ -17,6 +20,8 @@ class LerpShape:
         return self.shape_strengths[name]
 
     def add_shape(self, name: str, shape: Shape, strength: float = 1.0):
+        if isinstance(shape, list):
+            shape = Shape(shape)
         if not self.shapes:
             self.lerped_shape = shape.clone()
 
@@ -26,15 +31,17 @@ class LerpShape:
         self.update_lerped_shape()
     
     def add_shape_as_offset(self, name: str, shape: Shape, strength: float = 1.0):
+        if isinstance(shape, list):
+            shape = Shape(shape)
+        if not self.shapes:
+            self.lerped_shape = shape.clone()
         self.add_shape(name, shape + self._base_shape, strength)
-
 
     def update_shape_strength(self, name: str, strength: float):
         self.shape_strengths[name] = min(1.0, max(0.0, strength))
 
         self.update_lerped_shape()
     
-    #Gets the weighted average position of each point in the shape and returns a new shape
     def update_lerped_shape(self):
         new_points = []
         num_points = len(self.lerped_shape.points)

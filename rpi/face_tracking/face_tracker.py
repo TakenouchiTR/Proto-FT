@@ -33,6 +33,14 @@ class FaceTracker():
         left_edge = landmarks[landmark_enum.HEAD_LEFT_EDGE]
         right_edge = landmarks[landmark_enum.HEAD_RIGHT_EDGE]
         self.scale =  1 / abs(left_edge.x - right_edge.x)
+    
+    def update_parameters(self):
+        self.parameters.mouth_openness = self.get_mouth_openness()
+        self.parameters.mouth_pog = self.get_mouth_pog()
+        self.parameters.smile_right = self.get_mouth_smile_right()
+        self.parameters.smile_left = self.get_mouth_smile_left()
+        self.parameters.right_eye_openness = self.get_right_eye_openness()
+        self.parameters.left_eye_openness = self.get_left_eye_openness()
 
     def get_mouth_openness(self):
         top = average(list(map(lambda x: x[1], self.average_values[landmark_enum.TOP_LIP_BOTTOM_CENTER])))
@@ -41,6 +49,38 @@ class FaceTracker():
 
         return shape_thresholds.MOUTH_OPENNESS.lerp(raw_openness)
     
+    def get_mouth_pog(self):
+        top = average(list(map(lambda x: x[1], self.average_values[landmark_enum.TOP_LIP_BOTTOM_CENTER])))
+        bottom = average(list(map(lambda x: x[1], self.average_values[landmark_enum.BOTTOM_LIP_TOP_CENTER])))
+        left = average(list(map(lambda x: x[0], self.average_values[landmark_enum.MOUTH_LEFT_EDGE])))
+        right = average(list(map(lambda x: x[0], self.average_values[landmark_enum.MOUTH_RIGHT_EDGE])))
+
+        width = abs(right - left)
+        height = bottom - top
+
+        raw_pog = height / width
+        print(raw_pog)
+        return shape_thresholds.MOUTH_POG.lerp(raw_pog)
+
+    def get_mouth_smile_right(self):
+        edge = average(list(map(lambda x: x[1], self.average_values[landmark_enum.MOUTH_RIGHT_EDGE])))
+        top_center = average(list(map(lambda x: x[1], self.average_values[landmark_enum.TOP_LIP_TOP_CENTER])))
+        bottom_center = average(list(map(lambda x: x[1], self.average_values[landmark_enum.BOTTOM_LIP_BOTTOM_CENTER])))
+        center = (top_center + bottom_center) / 2
+        raw_smile = (center - edge) * self.scale
+
+        print(raw_smile)
+        return shape_thresholds.MOUTH_SMILE.lerp(raw_smile)
+    
+    def get_mouth_smile_left(self):
+        edge = average(list(map(lambda x: x[1], self.average_values[landmark_enum.MOUTH_LEFT_EDGE])))
+        top_center = average(list(map(lambda x: x[1], self.average_values[landmark_enum.TOP_LIP_TOP_CENTER])))
+        bottom_center = average(list(map(lambda x: x[1], self.average_values[landmark_enum.BOTTOM_LIP_BOTTOM_CENTER])))
+        center = (top_center + bottom_center) / 2
+        raw_smile = (center - edge) * self.scale
+
+        return shape_thresholds.MOUTH_SMILE.lerp(raw_smile)
+
     def get_right_eye_openness(self):
         top = average(list(map(lambda x: x[1], self.average_values[landmark_enum.RIGHT_EYE_TOP])))
         bottom = average(list(map(lambda x: x[1], self.average_values[landmark_enum.RIGHT_EYE_BOTTOM])))
@@ -51,7 +91,18 @@ class FaceTracker():
         width = abs(inner - outer)
 
         aspect_ratio = 1 - width / height
-        print(aspect_ratio)
+        return shape_thresholds.EYE_OPENNESS.lerp(aspect_ratio)
+
+    def get_left_eye_openness(self):
+        top = average(list(map(lambda x: x[1], self.average_values[landmark_enum.LEFT_EYE_TOP])))
+        bottom = average(list(map(lambda x: x[1], self.average_values[landmark_enum.LEFT_EYE_BOTTOM])))
+        inner = average(list(map(lambda x: x[1], self.average_values[landmark_enum.LEFT_EYE_INNER])))
+        outer = average(list(map(lambda x: x[1], self.average_values[landmark_enum.LEFT_EYE_OUTER])))
+
+        height = abs(bottom - top)
+        width = abs(inner - outer)
+
+        aspect_ratio = 1 - width / height
         return shape_thresholds.EYE_OPENNESS.lerp(aspect_ratio)
 
     def render_debug(self, frame, landmarks):

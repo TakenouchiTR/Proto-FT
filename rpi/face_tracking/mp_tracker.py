@@ -66,8 +66,7 @@ class MpTracker(FaceTracker):
         self.update_averages(landmarks)
 
         self.update_scale(landmarks)
-        self.parameters.mouth_openness = self.get_mouth_openness()
-        self.parameters.right_eye_openness = self.get_right_eye_openness()
+        self.update_parameters()
 
         if settings.SHOW_DEBUG:
             self.render_debug(frame, landmarks)
