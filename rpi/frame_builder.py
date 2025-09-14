@@ -1,6 +1,7 @@
 from typing import List, Tuple
 from shape import Shape
 from PIL import Image, ImageDraw
+import numpy as np
 
 class RenderSettings:
     offset = (0, 0)
@@ -38,6 +39,10 @@ class FrameBuilder:
             if x < 0 or x >= self.width or y < 0 or y >= self.height:
                 continue
             self.pixels[y][x] = color
+
+    def to_bytes(self):
+        arr = np.array(self.pixels, dtype=np.uint8)
+        return arr.tobytes()
 
     def reset(self):
         self.pixels = [[(0, 0, 0) for _ in range(self.width)] for _ in range(self.height)]

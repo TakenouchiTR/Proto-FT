@@ -59,7 +59,6 @@ class FaceTracker():
         height = bottom - top
 
         raw_pog = height / width
-        print(raw_pog)
         return shape_thresholds.MOUTH_POG.lerp(raw_pog)
 
     def get_mouth_smile_right(self):
@@ -69,7 +68,6 @@ class FaceTracker():
         center = (top_center + bottom_center) / 2
         raw_smile = (center - edge) * self.scale
 
-        print(raw_smile)
         return shape_thresholds.MOUTH_SMILE.lerp(raw_smile)
     
     def get_mouth_smile_left(self):
