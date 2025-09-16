@@ -1,8 +1,6 @@
-import mediapipe as mp
 import cv2
 
 from face_tracking_parameters import FaceTrackingParameters
-import mp_landmarks
 import face_tracking.landmarks as landmark_enum
 import settings
 import shape_thresholds
@@ -39,8 +37,14 @@ class FaceTracker():
         self.parameters.mouth_pog = self.get_mouth_pog()
         self.parameters.smile_right = self.get_mouth_smile_right()
         self.parameters.smile_left = self.get_mouth_smile_left()
+        self.parameters.frown_right = self.get_mouth_frown_right()
+        self.parameters.frown_left = self.get_mouth_frown_left()
         self.parameters.right_eye_openness = self.get_right_eye_openness()
         self.parameters.left_eye_openness = self.get_left_eye_openness()
+
+    def get_average_for_landmark(self, id):
+        values = self.average_values.get(id, [])
+        return average(list(map(lambda x: x[1], values)))
 
     def get_mouth_openness(self):
         top = average(list(map(lambda x: x[1], self.average_values[landmark_enum.TOP_LIP_BOTTOM_CENTER])))
@@ -78,6 +82,24 @@ class FaceTracker():
         raw_smile = (center - edge) * self.scale
 
         return shape_thresholds.MOUTH_SMILE.lerp(raw_smile)
+
+    def get_mouth_frown_right(self):
+        edge = average(list(map(lambda x: x[1], self.average_values[landmark_enum.MOUTH_RIGHT_EDGE])))
+        top_center = average(list(map(lambda x: x[1], self.average_values[landmark_enum.TOP_LIP_TOP_CENTER])))
+        bottom_center = average(list(map(lambda x: x[1], self.average_values[landmark_enum.BOTTOM_LIP_BOTTOM_CENTER])))
+        center = (top_center + bottom_center) / 2
+        raw_frown = (edge - center) * self.scale
+
+        return shape_thresholds.MOUTH_FROWN.lerp(raw_frown)
+
+    def get_mouth_frown_left(self):
+        edge = average(list(map(lambda x: x[1], self.average_values[landmark_enum.MOUTH_LEFT_EDGE])))
+        top_center = average(list(map(lambda x: x[1], self.average_values[landmark_enum.TOP_LIP_TOP_CENTER])))
+        bottom_center = average(list(map(lambda x: x[1], self.average_values[landmark_enum.BOTTOM_LIP_BOTTOM_CENTER])))
+        center = (top_center + bottom_center) / 2
+        raw_frown = (edge - center) * self.scale
+
+        return shape_thresholds.MOUTH_FROWN.lerp(raw_frown)
 
     def get_right_eye_openness(self):
         top = average(list(map(lambda x: x[1], self.average_values[landmark_enum.RIGHT_EYE_TOP])))

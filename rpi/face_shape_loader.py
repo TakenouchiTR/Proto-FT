@@ -10,21 +10,23 @@ def load_face_shapes_from_file(filename):
         shapes = json.load(f)
     
     left_mouth_lerp_shape = LerpShape(shapes["mouth"]["closed"])
-    left_mouth_lerp_shape.add_shape_as_offset("open", shapes["mouth"]["open"])
-    left_mouth_lerp_shape.add_shape_as_offset("smile", shapes["mouth"]["smile"])
-    left_mouth_lerp_shape.add_shape_as_offset("pog", shapes["mouth"]["pog"])
+    left_mouth_lerp_shape.add_shape("open", shapes["mouth"]["open"])
+    left_mouth_lerp_shape.add_shape("smile", shapes["mouth"]["smile"])
+    left_mouth_lerp_shape.add_shape("frown", shapes["mouth"]["frown"])
+    left_mouth_lerp_shape.add_shape("pog", shapes["mouth"]["pog"])
 
 
     right_mouth_lerp_shape = LerpShape(shapes["mouth"]["closed"])
-    right_mouth_lerp_shape.add_shape_as_offset("open", shapes["mouth"]["open"])
-    right_mouth_lerp_shape.add_shape_as_offset("smile", shapes["mouth"]["smile"])
-    right_mouth_lerp_shape.add_shape_as_offset("pog", shapes["mouth"]["pog"])
+    right_mouth_lerp_shape.add_shape("open", shapes["mouth"]["open"])
+    right_mouth_lerp_shape.add_shape("smile", shapes["mouth"]["smile"])
+    right_mouth_lerp_shape.add_shape("frown", shapes["mouth"]["frown"])
+    right_mouth_lerp_shape.add_shape("pog", shapes["mouth"]["pog"])
 
     right_eye_lerp_shape = LerpShape(shapes["eye"]["closed"])
-    right_eye_lerp_shape.add_shape_as_offset("open", shapes["eye"]["open"])
+    right_eye_lerp_shape.add_shape("open", shapes["eye"]["open"])
 
     left_eye_lerp_shape = LerpShape(shapes["eye"]["closed"])
-    left_eye_lerp_shape.add_shape_as_offset("open", shapes["eye"]["open"])
+    left_eye_lerp_shape.add_shape("open", shapes["eye"]["open"])
     
     face_shapes = FaceShapes()
     face_shapes.left_mouth = left_mouth_lerp_shape
@@ -45,9 +47,12 @@ class FaceShapes:
     def apply_weights(self, parameters: FaceTrackingParameters):
         self.right_mouth.update_shape_strength("open", parameters.mouth_openness)
         self.right_mouth.update_shape_strength("smile", parameters.smile_right)
+        self.right_mouth.update_shape_strength("frown", parameters.frown_right)
         self.right_mouth.update_shape_strength("pog", parameters.mouth_pog)
         self.left_mouth.update_shape_strength("open", parameters.mouth_openness)
         self.left_mouth.update_shape_strength("smile", parameters.smile_left)
+        self.left_mouth.update_shape_strength("frown", parameters.frown_left)
         self.left_mouth.update_shape_strength("pog", parameters.mouth_pog)
         self.right_eye.update_shape_strength("open", parameters.right_eye_openness)
         self.left_eye.update_shape_strength("open", parameters.left_eye_openness)
+        

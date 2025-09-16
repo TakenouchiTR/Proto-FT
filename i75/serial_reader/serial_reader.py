@@ -1,5 +1,8 @@
 from serial import Serial
 
+import settings
+
+frame_data_size = settings.MATRIX_WIDTH * settings.MATRIX_HEIGHT * 3
 
 class SerialReader():
 
@@ -17,6 +20,10 @@ class SerialReader():
 
         command = instructions[0]
         length = int.from_bytes(instructions[1:])
+        
+        if command == 0 and length > frame_data_size:
+            print(f"frame too large: {length}. Flushing buffer...")
+            self.serial.reset_input_buffer()
 
         print(f'reading {length} bytes')
         data = self.serial.read(length)

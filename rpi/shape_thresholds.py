@@ -11,7 +11,8 @@ class ShapeThreshold:
             value = max(min(value, self.maximum), self.minimum)
         return (value - self.minimum) / (self.maximum - self.minimum)
 
-MOUTH_OPENNESS = ShapeThreshold(0.03, 0.25)
+MOUTH_OPENNESS = ShapeThreshold(0.01, 0.2)
 MOUTH_SMILE = ShapeThreshold(0.00, 0.09)
-MOUTH_POG = ShapeThreshold(0.50, 1.40)
+MOUTH_FROWN = ShapeThreshold(0.00, 0.09)
+MOUTH_POG = ShapeThreshold(0.80, 1.40)
 EYE_OPENNESS = ShapeThreshold(0.82, 0.90)
