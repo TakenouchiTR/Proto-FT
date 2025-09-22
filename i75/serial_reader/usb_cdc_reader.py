@@ -1,16 +1,16 @@
-import serial
 from serial_reader.serial_reader import SerialReader
 import settings
+import usb_cdc
 
 frame_data_size = settings.MATRIX_WIDTH * settings.MATRIX_HEIGHT * 3
 
-class TestReader(SerialReader):
+class UsbCdcReader(SerialReader):
     def __init__(self):
-        self.serial = serial.serial_for_url("COM4", baudrate=115200, timeout=1)
-        self.serial.reset_input_buffer()
-    
+        usb_cdc.data.timeout = 0
+        usb_cdc.data.read()  # clear buffer
+
     def read_serial(self):
-        instructions = self.serial.read(5)
+        instructions = usb_cdc.data.read(5)
         print(f"Got instructions: {instructions}")
 
         if len(instructions) < 5:
@@ -20,12 +20,11 @@ class TestReader(SerialReader):
         command = instructions[0]
         length = int.from_bytes(instructions[1:], 'big')
 
-        if command == 0 and length > frame_data_size:
-            print(f"frame too large: {length}. Flushing buffer...")
-            self.serial.reset_input_buffer()
+        if command == 0 and length != frame_data_size:
+            print(f"frame wrong size: {length}. Flushing buffer...")
+            usb_cdc.data.read()  # clear buffer
 
         print(f'reading {length} bytes')
-        data = self.serial.read(length)
-        self.serial.flush()
+        data = usb_cdc.data.read(length)
 
         return command, data

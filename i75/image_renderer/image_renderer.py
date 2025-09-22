@@ -1,10 +1,7 @@
-from typing import List, Tuple
-import numpy as np
-
 import settings
 
 class ImageRenderer():
-    def render_pixels(self, pixels: List[List[Tuple[int, int, int]]]):
+    def render_pixels(self, pixels: list[list[tuple[int,int,int]]]):
         pass
 
     def render_bytes(self, data: bytes):

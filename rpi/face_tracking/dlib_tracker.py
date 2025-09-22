@@ -2,6 +2,7 @@ import cv2
 import dlib
 from face_tracking.face_tracker import FaceTracker
 import settings
+import numpy as np
 
 
 class DlibTracker(FaceTracker):
@@ -12,15 +13,34 @@ class DlibTracker(FaceTracker):
 
     def update(self):
         ret, frame = self.cap.read()
+        w = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        h = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        K = np.array([[w, 0, w/2],
+                    [0, w, h/2],
+                    [0, 0, 1]], dtype=np.float32)
+
+        # Rough fisheye distortion coefficients
+        # Try tweaking these until the image looks less warped
+        D = np.array([-0.3, 0.1, 0, 0], dtype=np.float32)
         if not ret:
             if settings.SHOW_DEBUG:
                 self.render_debug(frame, [])
             return None
         
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        new_K = cv2.fisheye.estimateNewCameraMatrixForUndistortRectify(
+            K, D, (w, h), np.eye(3), balance=0.0
+        )
+        map1, map2 = cv2.fisheye.initUndistortRectifyMap(
+            K, D, np.eye(3), new_K, (w, h), cv2.CV_16SC2
+        )
+        undistorted = cv2.remap(frame, map1, map2, interpolation=cv2.INTER_LINEAR)
+        
+        gray = cv2.cvtColor(undistorted, cv2.COLOR_BGR2GRAY)
         faces = self.detector(gray)
+        cv2.imshow("Undistorted", undistorted)
 
         for face in faces:
+            print("test")
             landmarks = self.predictor(gray, face)
             for n in range(68):
                 x = landmarks.part(n).x

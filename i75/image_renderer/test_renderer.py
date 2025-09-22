@@ -1,6 +1,5 @@
 import threading
 import tkinter as tk
-from typing import List, Tuple
 from image_renderer.image_renderer import ImageRenderer
 import settings
 from PIL import Image, ImageTk
@@ -21,7 +20,7 @@ class TestRenderer(ImageRenderer):
     def start(self):
         self.root.mainloop()
 
-    def render_pixels(self, pixels: List[List[Tuple[int, int, int]]] | bytes):
+    def render_pixels(self, pixels: list[list[tuple[int,int,int]]] | bytes):
         # Build a 1:1 image (matrix size), then scale for display.
         # Do NOT touch Tk widgets from this worker thread.
         img = Image.new('RGB', (settings.MATRIX_WIDTH, settings.MATRIX_HEIGHT), color=(0, 0, 0))
