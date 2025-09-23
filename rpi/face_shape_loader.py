@@ -34,6 +34,13 @@ def load_face_shapes_from_file(filename):
     face_shapes.left_eye = left_eye_lerp_shape
     face_shapes.right_eye = right_eye_lerp_shape
 
+    face_shapes._shapes = [
+        left_mouth_lerp_shape,
+        right_mouth_lerp_shape,
+        left_eye_lerp_shape,
+        right_eye_lerp_shape
+    ]
+
     return face_shapes
     
 
@@ -43,6 +50,8 @@ class FaceShapes:
         self.right_mouth: LerpShape
         self.left_eye: LerpShape
         self.right_eye: LerpShape
+
+        self._shapes = []
     
     def apply_weights(self, parameters: FaceTrackingParameters):
         self.right_mouth.update_shape_strength("open", parameters.mouth_openness)
@@ -55,4 +64,9 @@ class FaceShapes:
         self.left_mouth.update_shape_strength("pog", parameters.mouth_pog)
         self.right_eye.update_shape_strength("open", parameters.right_eye_openness)
         self.left_eye.update_shape_strength("open", parameters.left_eye_openness)
-        
+    
+    def __iter__(self):
+        return iter(self._shapes)
+
+    def __getitem__(self, index):
+        return self._shapes[index]
