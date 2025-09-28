@@ -2,7 +2,7 @@ import json
 
 from face_tracking_parameters import FaceTrackingParameters
 from lerp_shape import LerpShape
-from shape import Shape
+import settings
 
 
 def load_face_shapes_from_file(filename):

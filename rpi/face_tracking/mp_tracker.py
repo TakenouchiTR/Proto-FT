@@ -53,6 +53,7 @@ class MpTracker(FaceTracker):
             return None
         
         frame = cv2.flip(frame, 1)
+        frame = cv2.resize(frame, (512, 512))
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = self.face_mesh.process(rgb_frame)
 

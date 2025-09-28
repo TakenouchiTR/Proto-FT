@@ -19,15 +19,22 @@ def update_frame():
     left_face_render_settings.flip_h = True
     left_face_render_settings.offset = (128, 0)
 
+    prev_time = time.time()
+
     while True:
+        new_time = time.time()
+        print(new_time - prev_time)
+        prev_time = new_time
+
         parameters = face_tracker.update()
         if parameters is None:
             time.sleep(0.01)
             continue
 
-        face_shapes.apply_weights(parameters)
 
-        image_renderer.render_face(face_shapes)
+        # face_shapes.apply_weights(parameters)
+
+        # image_renderer.render_face(face_shapes)
         # frame_builder.reset()
 
         # frame_builder.draw_shape(face_shapes.right_mouth.lerped_shape)
@@ -41,6 +48,6 @@ def update_frame():
         time.sleep(0.01)
 
 if __name__ == "__main__":
-    serial_writer = TestWriter()
+    # serial_writer = TestWriter()
     image_renderer = PygameRenderer()
     update_frame()

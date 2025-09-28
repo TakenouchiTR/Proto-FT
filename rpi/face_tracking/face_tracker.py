@@ -8,7 +8,7 @@ from utils import average
 
 class FaceTracker():
     def __init__(self):
-        cap = cv2.VideoCapture(2, cv2.CAP_DSHOW)
+        cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, settings.FT_CAPTURE_WIDTH)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, settings.FT_CAPTURE_HEIGHT)
         

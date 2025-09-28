@@ -1,7 +1,10 @@
 from typing import List, Tuple
+
+import pygame
 from shape import Shape
 from PIL import Image, ImageDraw
 import numpy as np
+import settings
 
 class RenderSettings:
     offset = (0, 0)
@@ -17,6 +20,7 @@ class FrameBuilder:
         self.width = width
         self.height = height
         self.pixels: List[List[Tuple[int, int, int]]] = [[(0, 0, 0) for _ in range(width)] for _ in range(height)]
+        self.canvas = pygame.Surface((settings.MATRIX_WIDTH, settings.MATRIX_HEIGHT))
     
     def draw_shape(self, shape: Shape, render_settings: RenderSettings = None):        
         color = (255, 255, 255)

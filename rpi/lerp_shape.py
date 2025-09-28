@@ -56,3 +56,23 @@ class LerpShape:
             new_points.append((int(x), int(y)))
         
         self.lerped_shape = Shape(new_points)
+    
+    def __add__(self, other):
+        for key, shape in self.shapes.items():
+            self.shapes[key] = shape + other
+        return self
+    
+    def __sub__(self, other):
+        for key, shape in self.shapes.items():
+            self.shapes[key] = shape - other
+        return self
+
+    def __mul__(self, other):
+        for key, shape in self.shapes.items():
+            self.shapes[key] = shape * other
+        return self
+    
+    def __neg__(self):
+        for key, shape in self.shapes.items():
+            self.shapes[key] = -shape
+        return self
