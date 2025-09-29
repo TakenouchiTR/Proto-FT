@@ -126,6 +126,9 @@ class FaceTracker():
         return shape_thresholds.EYE_OPENNESS.lerp(aspect_ratio)
 
     def render_debug(self, frame, landmarks):
+        if frame is None:
+            print("Frame missing")
+            return
         try:
             if landmarks:
                 for id in landmarks.keys():

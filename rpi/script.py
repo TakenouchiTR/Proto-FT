@@ -15,9 +15,6 @@ serial_writer: SerialWriter
 image_renderer: ImageRenderer
 
 def update_frame():
-    left_face_render_settings = RenderSettings()
-    left_face_render_settings.flip_h = True
-    left_face_render_settings.offset = (128, 0)
 
     prev_time = time.time()
 
@@ -32,9 +29,9 @@ def update_frame():
             continue
 
 
-        # face_shapes.apply_weights(parameters)
+        face_shapes.apply_weights(parameters)
 
-        # image_renderer.render_face(face_shapes)
+        image_renderer.render_face(face_shapes)
         # frame_builder.reset()
 
         # frame_builder.draw_shape(face_shapes.right_mouth.lerped_shape)

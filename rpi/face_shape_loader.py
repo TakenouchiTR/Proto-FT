@@ -15,7 +15,6 @@ def load_face_shapes_from_file(filename):
     left_mouth_lerp_shape.add_shape("frown", shapes["mouth"]["frown"])
     left_mouth_lerp_shape.add_shape("pog", shapes["mouth"]["pog"])
 
-
     right_mouth_lerp_shape = LerpShape(shapes["mouth"]["closed"])
     right_mouth_lerp_shape.add_shape("open", shapes["mouth"]["open"])
     right_mouth_lerp_shape.add_shape("smile", shapes["mouth"]["smile"])
@@ -27,6 +26,11 @@ def load_face_shapes_from_file(filename):
 
     left_eye_lerp_shape = LerpShape(shapes["eye"]["closed"])
     left_eye_lerp_shape.add_shape("open", shapes["eye"]["open"])
+
+    left_eye_lerp_shape.flip_x()
+    left_mouth_lerp_shape.flip_x()
+    left_eye_lerp_shape += (settings.MATRIX_WIDTH, 0)
+    left_mouth_lerp_shape += (settings.MATRIX_WIDTH, 0)
     
     face_shapes = FaceShapes()
     face_shapes.left_mouth = left_mouth_lerp_shape
@@ -64,6 +68,11 @@ class FaceShapes:
         self.left_mouth.update_shape_strength("pog", parameters.mouth_pog)
         self.right_eye.update_shape_strength("open", parameters.right_eye_openness)
         self.left_eye.update_shape_strength("open", parameters.left_eye_openness)
+
+        self.right_mouth.update_lerped_shape()
+        self.left_mouth.update_lerped_shape()
+        self.right_eye.update_lerped_shape()
+        self.left_eye.update_lerped_shape()
     
     def __iter__(self):
         return iter(self._shapes)

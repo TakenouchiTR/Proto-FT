@@ -31,9 +31,9 @@ class FrameBuilder:
             if render_settings.rotation != 0:
                 shape = shape.rotated(render_settings.rotation, render_settings.rotation_center)
             if render_settings.flip_h:
-                shape = shape.flipped_x()
+                shape = shape.flip_x()
             if render_settings.flip_v:
-                shape = shape.flipped_y()
+                shape = shape.flip_y()
             if render_settings.offset != (0, 0):
                 shape += render_settings.offset
             color = render_settings.color
