@@ -127,8 +127,8 @@ class FaceTracker():
 
     def render_debug(self, frame, landmarks):
         if frame is None:
-            print("Frame missing")
             return
+        
         try:
             if landmarks:
                 for id in landmarks.keys():
