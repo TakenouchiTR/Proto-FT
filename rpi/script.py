@@ -20,7 +20,7 @@ def update_frame():
 
     while True:
         new_time = time.time()
-        print(new_time - prev_time)
+        # print(new_time - prev_time)
         prev_time = new_time
 
         parameters = face_tracker.update()
